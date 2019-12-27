@@ -3,6 +3,8 @@ import os
 
 import six
 
+from granula.dsl.exception import DSLError
+from granula.dsl.scanner import scan
 from granula.exception import ReferencePathError, EnvironmentVariableError
 
 
@@ -55,4 +57,7 @@ class EnvironmentVariable(IOperator):
         if value is None:
             raise EnvironmentVariableError(self._name)
 
-        return value
+        try:
+            return scan('{}'.format(value))[1][0].value
+        except DSLError:
+            raise EnvironmentVariableError(self._name)
